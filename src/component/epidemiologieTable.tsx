@@ -45,8 +45,9 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
         {/* Filtres */}
         <div className="bg-white p-6 rounded-xl shadow flex flex-wrap gap-4 mb-6 items-end">
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Date de début</label>
+            <label htmlFor="start-date" className="text-sm font-medium mb-1">Date de début</label>
             <input
+                id="start-date"
                 type="date"
                 value={start}
                 onChange={e => setStart(e.target.value)}
@@ -54,8 +55,9 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Date de fin</label>
+            <label htmlFor="end-date" className="text-sm font-medium mb-1">Date de fin</label>
             <input
+                id="end-date"
                 type="date"
                 value={end}
                 onChange={e => setEnd(e.target.value)}
@@ -63,8 +65,9 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Pays / Région</label>
+            <label htmlFor="region" className="text-sm font-medium mb-1">Pays / Région</label>
             <input
+                id="region"
                 type="text"
                 value={region}
                 onChange={e => setRegion(e.target.value)}

@@ -12,9 +12,9 @@ interface PredictionFormProps {
 }
 
 export default function PredictionForm({ onPredictionComplete }: PredictionFormProps) {
-    const [day, setDay] = useState("");
-    const [month, setMonth] = useState("");
-    const [year, setYear] = useState("");
+    const [jour, setJour] = useState("");
+    const [mois, setMois] = useState("");
+    const [annee, setAnnee] = useState("");
     const [pays, setPays] = useState("");
     const [maladie, setMaladie] = useState("1");
     const [cas, setCas] = useState("");
@@ -46,14 +46,14 @@ export default function PredictionForm({ onPredictionComplete }: PredictionFormP
 
 
     const handlePredict = async () => {
-        if (!day || !month || !year || !pays || !hospitalisation || !population || !cas) {
+        if (!jour || !mois || !annee || !pays || !hospitalisation || !population || !cas) {
             setError("Tous les champs sont obligatoires");
             return;
         }
 
-        const dateStr = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+        const dateStr = `${annee}-${mois.padStart(2, "0")}-${jour.padStart(2, "0")}`;
 
-        // Construction du payload selon type
+        // Construction du payload principal
         let payload: any = {
             date: dateStr,
             pays: pays,
@@ -137,24 +137,31 @@ export default function PredictionForm({ onPredictionComplete }: PredictionFormP
             {/* Section : Paramètres généraux */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="flex flex-col">
-                    <label className="text-sm font-medium mb-1">Type</label>
-                    <select value={type} onChange={handleChange(setType)} className="border p-2 rounded w-full">
+                    <label htmlFor="type-select" className="text-sm font-medium mb-1">Type</label>
+                    <select
+                        id="type-select"
+                        value={type}
+                        onChange={handleChange(setType)}
+                        className="border p-2 rounded w-full"
+                    >
                         <option value="morts_light">Morts (light)</option>
                         <option value="morts_hard">Morts (hard)</option>
                     </select>
                 </div>
 
+
                 {[
-                    { label: "Jour", value: day, setter: setDay, placeholder: "1-31" },
-                    { label: "Mois", value: month, setter: setMonth, placeholder: "1-12" },
-                    { label: "Année", value: year, setter: setYear, placeholder: "ex: 2021" },
-                    { label: "Hospitalisations", value: hospitalisation, setter: setHospitalisation },
-                    { label: "Cas", value: cas, setter: setCas },
-                    { label: "Population pays", value: population, setter: setPopulation },
-                ].map(({ label, value, setter, placeholder }, idx) => (
+                    { id: "jour", label: "Jour", value: jour, setter: setJour, placeholder: "1-31" },
+                    { id: "mois", label: "Mois", value: mois, setter: setMois, placeholder: "1-12" },
+                    { id: "annee", label: "Année", value: annee, setter: setAnnee, placeholder: "ex: 2021" },
+                    { id: "hospitalisation", label: "Hospitalisations", value: hospitalisation, setter: setHospitalisation },
+                    { id: "cas", label: "Cas", value: cas, setter: setCas },
+                    { id: "population", label: "Population pays", value: population, setter: setPopulation },
+                ].map(({ id, label, value, setter, placeholder }, idx) => (
                     <div className="flex flex-col" key={idx}>
-                        <label className="text-sm font-medium mb-1">{label}</label>
+                        <label htmlFor={id} className="text-sm font-medium mb-1">{label}</label>
                         <input
+                            id={id}
                             type="number"
                             value={value}
                             onChange={handleChange(setter)}
@@ -164,10 +171,12 @@ export default function PredictionForm({ onPredictionComplete }: PredictionFormP
                     </div>
                 ))}
 
-                {/* Select séparé pour le pays */}
+
+
                 <div className="flex flex-col">
-                    <label className="text-sm font-medium mb-1">Pays</label>
+                    <label htmlFor="pays" className="text-sm font-medium mb-1">Pays</label>
                     <select
+                        id="pays"
                         value={pays}
                         onChange={handleChange(setPays)}
                         className="border p-2 rounded w-full"
@@ -187,27 +196,28 @@ export default function PredictionForm({ onPredictionComplete }: PredictionFormP
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                         {[
-                            { label: "Fermeture des écoles", value: fermetureEcoles, setter: setFermetureEcoles },
-                            { label: "Événements publics annulés", value: evenementsAnnules, setter: setEvenementsAnnules },
-                            { label: "Restrictions rassemblement", value: restrictionsRassemblement, setter: setRestrictionsRassemblement },
-                            { label: "Fermeture transports publics", value: fermetureTransports, setter: setFermetureTransports },
-                            { label: "Confinement", value: confinement, setter: setConfinement },
-                            { label: "Restrictions déplacements internes", value: deplacementInterne, setter: setDeplacementInterne },
-                            { label: "Contrôle voyage international", value: controleVoyage, setter: setControleVoyage },
-                            { label: "Support international", value: supportInternational, setter: setSupportInternational },
-                            { label: "Campagne informative", value: campagneInfo, setter: setCampagneInfo },
-                            { label: "Politique de test", value: politiqueTest, setter: setPolitiqueTest },
-                            { label: "Traçage des cas contacts", value: tracageCas, setter: setTracageCas },
-                            { label: "Investissement santé", value: investSante, setter: setInvestSante },
-                            { label: "Investissement vaccin", value: investVaccin, setter: setInvestVaccin },
-                            { label: "Port du masque", value: masques, setter: setMasques },
-                            { label: "Vaccination", value: vaccination, setter: setVaccination },
-                            { label: "Rigueur des mesures", value: rigueur, setter: setRigueur },
-                            { label: "Fermeture des zones de travail", value: fermetureTravail, setter: setFermetureTravail },
-                        ].map(({ label, value, setter }, idx) => (
-                            <div className="flex flex-col" key={idx}>
-                                <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+                            { id: "fermetureEcoles", label: "Fermeture des écoles", value: fermetureEcoles, setter: setFermetureEcoles },
+                            { id: "evenementsAnnules", label: "Événements publics annulés", value: evenementsAnnules, setter: setEvenementsAnnules },
+                            { id: "restrictionsRassemblement", label: "Restrictions rassemblement", value: restrictionsRassemblement, setter: setRestrictionsRassemblement },
+                            { id: "fermetureTransports", label: "Fermeture transports publics", value: fermetureTransports, setter: setFermetureTransports },
+                            { id: "confinement", label: "Confinement", value: confinement, setter: setConfinement },
+                            { id: "deplacementInterne", label: "Restrictions déplacements internes", value: deplacementInterne, setter: setDeplacementInterne },
+                            { id: "controleVoyage", label: "Contrôle voyage international", value: controleVoyage, setter: setControleVoyage },
+                            { id: "supportInternational", label: "Support international", value: supportInternational, setter: setSupportInternational },
+                            { id: "campagneInfo", label: "Campagne informative", value: campagneInfo, setter: setCampagneInfo },
+                            { id: "politiqueTest", label: "Politique de test", value: politiqueTest, setter: setPolitiqueTest },
+                            { id: "tracageCas", label: "Traçage des cas contacts", value: tracageCas, setter: setTracageCas },
+                            { id: "investSante", label: "Investissement santé", value: investSante, setter: setInvestSante },
+                            { id: "investVaccin", label: "Investissement vaccin", value: investVaccin, setter: setInvestVaccin },
+                            { id: "masques", label: "Port du masque", value: masques, setter: setMasques },
+                            { id: "vaccination", label: "Vaccination", value: vaccination, setter: setVaccination },
+                            { id: "rigueur", label: "Rigueur des mesures", value: rigueur, setter: setRigueur },
+                            { id: "fermetureTravail", label: "Fermeture des zones de travail", value: fermetureTravail, setter: setFermetureTravail },
+                        ].map(({ id, label, value, setter }) => (
+                            <div className="flex flex-col" key={id}>
+                                <label htmlFor={id} className="text-sm font-medium text-gray-700 mb-1">{label}</label>
                                 <select
+                                    id={id}
                                     value={value}
                                     onChange={(e) => setter(parseInt(e.target.value))}
                                     className="border p-2 rounded text-sm"
@@ -224,7 +234,6 @@ export default function PredictionForm({ onPredictionComplete }: PredictionFormP
                 </div>
             )}
 
-            {/* Bouton de soumission */}
             <div className="mt-8">
                 <button
                     onClick={handlePredict}
@@ -234,7 +243,6 @@ export default function PredictionForm({ onPredictionComplete }: PredictionFormP
                 </button>
             </div>
 
-            {/* Résultat ou erreur */}
             {prediction !== null && (
                 <div className="mt-6 text-green-600 font-semibold text-lg">Résultat : {prediction}</div>
             )}
