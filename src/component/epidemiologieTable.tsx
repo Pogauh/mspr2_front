@@ -12,6 +12,7 @@ export interface DataRow {
   nbr_hospitalises: number;
   contamination_cumule: number;
 }
+
 interface Props {
   onDataLoaded: (data: DataRow[]) => void;
 }
@@ -21,16 +22,17 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
   const [loading, setLoading] = useState(false);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
-  const [region, setRegion] = useState('');  // Ajout de l'état pour la région
+  const [region, setRegion] = useState('');
 
   const fetchData = async () => {
     if (!start || !end) return alert("Veuillez choisir une plage de dates.");
     setLoading(true);
     try {
-      const res = await axios.get('http://127.0.0.1:8000/epidemiologie/date-range-region', {
-        params: { start, end, region }  // Ajout du paramètre 'region'
+      const res = await axios.get('http://127.0.0.1:8000/epidemiologie/date-range-region/', {
+        params: { start, end, region }
       });
       setData(res.data);
+      onDataLoaded(res.data);
     } catch (e) {
       console.error("Erreur API", e);
     } finally {
@@ -40,35 +42,34 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
 
   return (
       <div className="container mx-auto px-4 py-6">
-        {/* Sélection de date et région */}
-        <div className="bg-white p-6 rounded-xl shadow flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-          <div className="flex items-center gap-2">
-            <CalendarDays className="text-blue-500" />
+        {/* Filtres */}
+        <div className="bg-white p-6 rounded-xl shadow flex flex-wrap gap-4 mb-6 items-end">
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Date de début</label>
             <input
                 type="date"
                 value={start}
                 onChange={e => setStart(e.target.value)}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 px-3 py-2 rounded-md"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <CalendarDays className="text-blue-500" />
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Date de fin</label>
             <input
                 type="date"
                 value={end}
                 onChange={e => setEnd(e.target.value)}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 px-3 py-2 rounded-md"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="region" className="text-sm text-gray-700">Pays/Région</label>
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Pays / Région</label>
             <input
                 type="text"
-                id="region"
                 value={region}
                 onChange={e => setRegion(e.target.value)}
-                placeholder="Entrez un pays ou une région"
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="ex: France"
+                className="border border-gray-300 px-3 py-2 rounded-md"
             />
           </div>
           <button
@@ -79,13 +80,13 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
           </button>
         </div>
 
-        {/* Tableau des données */}
-        <div className="overflow-auto rounded-lg shadow-md">
-          <table className="w-full table-auto text-sm text-left text-gray-700 bg-white">
-            <thead className="bg-blue-50 text-blue-800 uppercase text-xs tracking-wider">
+        {/* Table scrollable */}
+        <div className="overflow-auto max-h-[300px] border rounded-lg shadow">
+          <table className="min-w-[800px] w-full text-sm text-left text-gray-800 bg-white">
+            <thead className="bg-gray-100 sticky top-0 z-10">
             <tr>
               <th className="px-6 py-3">Date</th>
-              <th className="px-6 py-3">Pays/Région</th>
+              <th className="px-6 py-3">Région</th>
               <th className="px-6 py-3">Population</th>
               <th className="px-6 py-3">Cas</th>
               <th className="px-6 py-3">Morts</th>
@@ -97,11 +98,11 @@ export default function EpidemiologieTable({ onDataLoaded }: Props) {
             <tbody>
             {loading ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-500">Chargement...</td>
+                  <td colSpan={8} className="text-center py-6 text-gray-500">Chargement...</td>
                 </tr>
             ) : data.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-6 text-gray-400">Aucune donnée</td>
+                  <td colSpan={8} className="text-center py-6 text-gray-400">Aucune donnée trouvée</td>
                 </tr>
             ) : (
                 data.map((row, index) => (
